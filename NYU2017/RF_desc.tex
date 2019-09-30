@@ -1,0 +1,44 @@
+\subsection{Random Forests}\label{rf} 
+RFs are an ensemble learning method based on decision trees. The
+prediction of the RF classifier is determined by majority voting
+across multiple trees fit on subsamples of the data and subsamples of
+the features.
+
+We ran the RF model using four different sets of input variables. For
+each we optimize the hyperparameters using a grid search routine from
+the {\tt scikit-learn} python module \hyperref[csl:17]{(Pedregosa et
+  al. 2011)}
+
+In our first iteration, we use all of the engineered features. Using
+hyperparameter grid-searching, we fit 50 trees with a minimum of 10
+samples at each leaf node, each tree having a minimum of five
+features, using a Gini impurity criterion (\autoref{gini}) to measure
+leaf purity.
+
+In order to detect disparities, we then recalibrate and run the RF
+model with the demographic features removed. If the predictive power
+increased with the inclusion of demographic variables (beyond the
+expected increase due to a larger feature space), that would indicate
+that these variables are influential on the model, and suggest the
+presence of disparities in defendants' treatment based on demographic
+information. We fit an RF classifier of 50 trees with a minimum of 2
+samples at each leaf node, again with the Gini criteria. Each of these
+trees considered a maximum of 20\% of the feature space.
+
+Our third iteration of RFs is a classifier without timeline-related
+features (see \autoref{tab:Features}). Having timeline-related
+variables, such as time-to-plea, but also the number of court dates and
+number of plea dates, as input features in the trees may be
+problematic because of their correlation with the target
+variable. Moreover, we hope to predict the length of cases with
+information exogenous to the case proceedings; keeping
+timeline-related variables in the classifier is helpful for pointing
+out where delays may be happening during a case progression, but we
+would also like to identify which features of our classifier become
+important when runing without this retrospective information.
+
+In the fourth model, we remove both the timeline-related variables and the
+demographic variables, again comparing the performance of each to
+identify any impact the demographic variables have on the resulting
+classification.
+

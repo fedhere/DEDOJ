@@ -1,0 +1,18 @@
+\subsection{Leaf purity and feature importances}
+The Gini impurity is calculated as the sum of the products of the population ratio and the classification error rate over each of $N$ classes,
+
+$$I_{Gini} = \sum_{i=1}^{N}{p_i e_i}$$
+
+with $p_{i}$ being the population ratio and $e_{i}$ being the misclassification rate, both for class $i$. In the case for $N=2$, this can be simplified: for a leaf having $a$ members in class 1 and $b$ members in class 2, the impurity can be calculated as
+
+$$I_{Gini} = \frac{2 a b}{(a+b)^2}$$
+
+For example, in the tree above, for the rightmost leaf on the bottom level that contains 40 classified in the first class and 7 in second class, the coefficient is calculated as $\frac{2 \times 40 \times 7}{(40+7)^2} = 0.2535$.
+
+Leaf impurity measures can be used to determine which features of a decision tree model have the most importance to determining the final classifications. The Gini variable importance measure for a variable $X_m$ in a random forest of $N$ trees is given by \cite{NIPS2013_4928}
+
+$$Imp_{Gini}(X_m) = \frac{1}{N} \sum_T \sum_{t \in{T}: v(s_t)=X_m}{p(t)(I_{Gini}(t)-p_L I_{Gini}(t_L)-p_R I_{Gini}(t_R))}$$
+
+where the summations are over all nodes $t$ in trees $T$ having $X_m$ as the splitting variable, $p(t)$ is the proportion of observations in the forest that are evaluated at node $t$, and $p_L$ and $p_R$ are the proportions of the population split to the left and right children nodes $t_L$ and $t_R$, respectively. We use this measure for variable importance throughout the rest of this paper.
+
+In our analysis, the actual performance of the classification is less important than determining the variables that influence the classification. We evaluate the receiver operator characteristic (ROC) plots to validate that the models have some predictive power, but once that is established, the Gini variable importance measures are our primary interest. Weaknesses of this measure include a bias towards (higher reported values for) continuous variables and away (lower reported values for) variables with a small number of categories. It is also possible for a combination of lower importance variables to be jointly predictive, which would not be detected in a simple evaluation of importance rankings \cite{Epifanio_2017}.

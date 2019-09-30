@@ -1,0 +1,47 @@
+
+\begin{table*}
+\centering
+\tiny
+\begin{tabular}{llp{8cm}p{5cm}l}
+Type        & Feature              & Description                                                                                             & Possible values/range                                                                                                             & Missing values \\ \hline
+Categorical & Courtroom            & in what courtroom did the disposition take place                                                        & various                                                                                                                           & 460            \\
+Integer     & Courtroom Count      & through how many different courtrooms did the case go                                                   & 1-17                                                                                                                              & 123            \\
+Categorical & Courtroom Type       & what is the type of courtroom where disposition happened                                                & case management court, domestic violence court, drug court, general felony court, north county court, south county court, unknown & 123            \\
+Binary      & Custody              & was the defendant in custody or not at the start of the case                                            & 0,1                                                                                                                               & 325            \\
+Categorical & Defender type        & type of defender at disposition                                                                         & public, private, independent, alternate, unknown                                                                                  & 123            \\
+Binary      & Gang enhancements    & are gang enhancements present                                                                           & 0,1                                                                                                                               & 0              \\
+Categorical & Initial Plea         & did the defendant plea guilty, not guilty or no contest                                                 & guilty, not guilty, no contest                                                                                                    & 325            \\
+Integer     & Ncharges             & number of charges a defendant is facing                                                                 & 1-47                                                                                                                              & 0              \\
+Integer     & NcourtDates*         & the number of court dates for a case                                                                    & 1-76                                                                                                                              & 0              \\
+Integer     & Ndefendents          & number of defendants per case                                                                           & 1-7, 20                                                                                                                           & 0              \\
+Integer     & Nenhancements        & number of charge enhancements                                                                           & 1-26                                                                                                                              & 0              \\
+Integer     & Nfelonies            & number of felony charges for a case                                                                     & 1-44                                                                                                                              & 0              \\
+Integer     & Nfta                 & number of times a defendant failed to appear                                                            & 1-12                                                                                                                              & 0              \\
+Integer     & NHS                  & number of charges due to violation of the Health \& Safety code                                         & 1-24                                                                                                                              & 0              \\
+Integer     & NPC                  & number of charges due to violation of the general Penal code                                            & 1-32                                                                                                                              & 0              \\
+Integer     & NpleaDates*          & the number of plea dates in a case                                                                      & 1-30                                                                                                                              & 402            \\
+Integer     & NVC                  & number of charges due to violation of the Vehicle code                                                  & 1-16                                                                                                                              & 0              \\
+Binary      & PC12022              & are there other critical enhancements connected to the case (the use of a weapon or presence of injury) & 0,1                                                                                                                               & 0              \\
+Binary      & PC1368               & was the defendant deemed incompetent to stand trial at any point                                        & 0,1                                                                                                                               & 0              \\
+Binary      & Prelim               & was there a preliminary hearing or not                                                                  & 0,1                                                                                                                               & 0              \\
+Categorical & Possible Outcome     & what was the inferred sentence outcome                                                                  & prison, probation/jail, unknown                                                                                                   & 0              \\
+Binary      & Public Defender      & was the defendant represented by a public defender at any point                                         & 0,1                                                                                                                               & 123            \\
+Integer     & Time to Plea*        & the number of days between when case got created until the defendant's initial plea                     & 0-1222                                                                                                                            & 325            \\
+Binary      & Time waived          & was there time waived at any point                                                                      & 0,1                                                                                                                               & 0              \\
+Binary      & Trial                & did the case go to trial or not                                                                         & 0,1                                                                                                                               & 0              \\
+Binary      & More than a year     & is the time to disposition less than or greater than one year                                           & 0,1                                                                                                                               & 0              \\
+Integer     & (Time to Arraignment*) & the number of days between when case got created until the defendant was arraigned                      & 0-1093                                                                                                                            & 130            \\
+Integer     & (Time to Disposition*) & the number of days between when case got created until disposition                                      & 0-1181                                                                                                                            & 460            \\
+Integer     & (Time to Last*)       & the number of days between when case got created until the last event registered to a case              & 0-1232                                                                                                                            & 0             
+\end{tabular}
+\caption{Engineered features. \textit{Time to disposition $\geq$ 1
+    year} is the feature on which the classification, is based. See
+  Section 6. Features marked with a * are timeline related features,
+  meaning that they intrinsically convey information about the
+  duration of a case, and will be considered differently in
+  our analysis (see~\autoref{rf}). Features indicated in parenthesis
+  are visualized through our dashboard \autoref{visual-analysis-tools}
+  and used in the exploratory analysis \autoref{explo}, but are not
+  used as input features for the
+  models}. \label{tab:Features} \end{table*}
+

@@ -1,0 +1,43 @@
+\subsection{Visual tool to enable data exploration}
+
+While we will perform a statistical analysis of the data, this work
+will be generated from a typical data-science approach: finding,
+comprehending, merging, and sorting data; and applying statistical
+tools and other filters to identify trends in the data. These are not
+tasks that are suited for a DA's office, which generally has little
+training for this purpose, and has many other important legal tasks to
+perform. Therefore, it is desirable to automate much of this process
+and provide a means for the prosecutors to engage with their data so
+that they can identify trends without advanced data skills.
+
+Even before the final SCC dataset was in our hands, we generated
+concepts for the visualization using synthetic datasets. These
+datasets were constructed with a small set of features that we
+expected would be of interest to the attorneys. This includes the
+durations of four phases of prosecution, race and gender, and
+age. Although these are only some of the important variables to
+consider in our visualization and modeling activities, we chose these
+for development purposes so that we could determine how best to handle
+arbitrary variables we may want to display. In particular, we have
+been able to prototype the ability to filter our data based on binary,
+categorical, and continuous variables. All of the engineered features
+are enabled in the final version of the dashboard, and new variables
+can be easily added on as needed.
+
+The simplest form of this visualization is a stacked horizontal bar
+plot (\autoref{fig:sshot}). Each bar represents a category of
+comparison that is selected by the user, (e.g., race/ethnicity, age
+group, or court category referring to the court of
+disposition). Visual comparisons are made via three information
+channels for each bar: its location on the $x$-axis, width, and color.
+
+The location of the bar encodes the time for a given phase to commence
+relative to the start of some other chosen phase. Location attributes
+are most easily compared by a user when they are placed on the same
+scale \hyperref[csl:13]{(Munzner 2014}; \hyperref[csl:14]{Wilkinson
+  2005)}. Therefore, we provide the ability to choose which phase to
+compare against and align the $x$-axis (time) such that the phase
+begins at time $t = 0$, and earlier phases are displayed on the
+negative portion of the scale. For overall case-duration comparison,
+we align to the beginning of the first phase, where the start of each
+case is displayed at $t = 0$.

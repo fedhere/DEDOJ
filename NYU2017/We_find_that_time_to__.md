@@ -1,0 +1,9 @@
+We find that time to plea is the most important feature on predicting disposition time within a year. This corresponds with our expectation based on Figure \ref{fig:PleaVsDisposition}, because a case can not be concluded until a plea has taken place. Splitting the cases on that feature at 365 days will yield a perfectly pure node in the tree.
+
+The presence of a preliminary hearing, the number of court dates, and the type of court where case disposition took place were also important features. The relatively high power of prediction for these two features also aligns with our expectations. The presence of a preliminary hearing in a case indicates that the case has moved beyond early case stages and entered trial preparation stages. A waiver or absence of preliminary hearing would indicate that the case moves directly on to trial or the defendant pleads guilty, both of which shorten the length of the case. We also expect the number of court dates to be positively correlated with the whole length of a case. Court types are associated with specific types of criminal cases such as drug or domestic violence crimes, or they are specific to a different geographic area of the county. Thus, they may be related to the main charge, which is an important feature in the GBT model.
+
+The number of plea dates is also an expected strong indicator of disposition time. Similar to a relatively early time to plea, a low number of plea dates may indicate a defendant has plead guilty early in the process.
+
+Enhancements on a case were very weak features in determining case disposition within a year.
+
+Full details of the feature importances for all eight runs of our models are given in Table \ref{tab:featimp} in the Appendix.

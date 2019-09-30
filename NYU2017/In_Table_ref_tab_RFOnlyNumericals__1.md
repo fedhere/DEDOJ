@@ -1,0 +1,7 @@
+In Table \ref{tab:RFOnlyNumericals} we have results from running Random Forest Classification only on the 21 numerical/binary features. We find that time to plea is the most important feature on predicting disposition time within a year. This corresponds with our expectation based on Figure \ref{fig:PleaVsDisposition}, because a case can not be concluded until a plea has taken place. Splitting the cases on that feature at 365 days will yield a very high purity in one resulting node.
+
+The presence of a preliminary hearing and number of court dates were the next important features. The relatively high power of prediction for two features also aligns with our expectations. The presence of a preliminary hearing in a case indicates that the case has moved beyond early case stages and entered trial preparation stages. A waiver or absence of preliminary hearing would indicate that the case moves directly on to trial or the defendant pleads guilty, both of which shorten the length of the case. We also expect the number of court dates to be positively correlated with the whole length of a case.
+
+The number of plea dates, while not as important as the first three features, is also an expected strong indicator of disposition time. Similar to a relatively early time to plea, a low number of plea dates would indicate a defendant has plead guilty early.
+
+Enhancements on a case were very weak features in determining case disposition within a year.

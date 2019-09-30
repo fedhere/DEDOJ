@@ -1,0 +1,7 @@
+The width of the bar encodes the duration of each phase. These values are calculated as the difference of the times from the beginning of each case to the ends of two consecutive phases. Since these times are determined by our own categorization scheme for the case events, the phase durations will be subject to some error depending on how well we can identify the demarcations between the phases in the data and how well the data is entered into the DA's case management system.
+
+The color of the bars encode which of the four phases is being represented. We use four colors drawn widely and uniformly from the viridis color palette \cite{van_der_walt_matplotlib_2015}. The colormap was developed for the Matplotlib python graphics package and is now its default color palette as of version 2.0. Viridis has two desirable properties: it is perceptually uniform (meaning that the scale is uniformly smooth and does not induce a perception of structure) and robust to common forms of colorblindness. These colors are easily distinguishable.
+
+An additional channel of information is available when hovering the mouse pointer over any aggregated bar, showing a one-dimensional horizontal scatterplot of the underlying data along a time axis. Also displayed is a boxplot of the distribution, as well as the elementary statistics of minimum, maximum and median.
+
+A prototype of this dashboard using synthetic data is available at \href{http://bit.ly/2hbPqrL}{http://bit.ly/2hbPqrL}.

@@ -1,0 +1,45 @@
+To examine what other case factors might be the key drivers of delay
+we look at case duration for cases with specific characteristics
+independently. In \autoref{fig:Violins} we look at the distribution of
+case duration (days-to-disposition) through multiple violin
+plots. When the data can be split in a binary fashion, a violin plot
+allows an intuitive comparison of the two distributions. The different
+colors (blue and green) represent case-duration distributions for two
+different subsets of the dataset. The distributions are normalized and
+smoothed via kernel-density estimate with a Gaussian kernel. The
+minimum and maximum values of each distribution reflect the shortest
+and longest case in the dataset (and they need not be equal for the
+two subsets).  We visualize the distributions of days-to-disposition
+in this fashion for the following binary split of the data:
+\begin{itemize}
+\item gang enhancement \emph{vs} no gang enhancement on the charges,
+\item single \emph{vs} multiple charges on the case,
+\item single \emph{vs} multiple defendant,
+\item guilty plea \emph{vs} any other plea,
+\item no contest plea \emph{vs} any other plea,
+\item not guilty \emph{vs} any other plea,
+\item there was a preliminary hearing \emph{vs} no preliminary hearing on the case,
+\item time waived \emph{vs}  time not waived,
+\item trial \emph{vs} no trial.
+\end{itemize}
+
+
+
+More information of these features can be found in
+\autoref{tab:Features}. We see that cases where the defendant
+initially pleads guilty or no contest to charges are generally
+resolved early in the process, while cases where the defendant pleads
+not guilty have a flatter distribution, indicating more variability in
+the prosecutorial process duration. Cases where the defendant pleads
+not guilty are more likely to go to trial, so this is consistent with
+what we see in the distribution of durations for cases that have
+a preliminary hearing and/or a trial.  The presence of enhancements and
+number of defendants are of specific interest as they had been clearly
+identified by the SCC DA as possible key contributors to delays in the
+prosecutorial process, but, while the first shows more power in the
+tail, the presence of more than one defendant on a case or more than
+one charge against a defendant do not, somewhat surprisingly, show
+significant differences in case duration. However, we emphasize that
+the number of cases with multiple defendants and multiple charges is
+small, so this difference may not be statistically robust.
+

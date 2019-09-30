@@ -1,0 +1,9 @@
+#Results
+
+We found that time to plea is the most important feature for both RF and GBT, regardless of the inclusion of demographic variables (see subplots (a), (b), (c), and (d) in Figure \ref{fig:featureimportances}). In addition, the number of court dates and type of initial plea appear in the top five of both models, with and without demographic variables. The importance of time-related features is not surprising since they are correlated with time to disposition.
+
+With the addition of demographic variables, we found no change in the predictive power of our models. Although age at offense and zip code appear in the top 10 important features of the GBT, the models are still dominated by the first few time-related features.
+
+After removing time-related features, we find agreement between RF and GBT that possible sentence outcome is among the most important features. The main charge and type of initial plea are the primary importance features for the GBT and RF models, respectively (panels (e) through (h)), however they only appear as at best the fifth-most important feature in the complementary model. It is not clear why the models would predict such different results, although it is possible that there is some covariance between these two features. It is also important to note the relative importances, especially in the GBT model whose importances feature much less variation.
+
+Surprisingly, whether a case went to trial or had a preliminary hearing was not important in determining case duration, even though they appear to have significant differences in the distribution splits in Figure 3 (g) and (i). However, only 100 cases went to trial and only 848 held a preliminary hearing, therefore they may not be greatly important in a classifier. Furthermore, preliminary hearing and trial may correlate with other features, such as court type and initial plea. This correlation may also weaken their importance.

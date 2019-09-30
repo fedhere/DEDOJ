@@ -1,0 +1,44 @@
+\section{Appendix}
+% Please add the following required packages to your document preamble:
+% \usepackage{booktabs}
+\begin{table*}[]
+\centering
+\tiny
+\begin{tabular}{@{}ccccc@{\qquad}cccc@{}}
+\cmidrule(r){2-5} \cmidrule(l){7-10}
+                          & \multicolumn{4}{c}{Random Forest}                                                            & \multicolumn{4}{c}{Gradient Boosted Tree}                                                  \\ \cmidrule(r){2-5} \cmidrule(l){7-10} 
+                          & \multicolumn{2}{c}{With time-dependant vars} & \multicolumn{2}{c}{W/o time-dependant vars}   & \multicolumn{2}{c}{With time-dependant vars} & \multicolumn{2}{c}{W/o time-dependant vars} \\
+                          & w/ Demogr.            & w/o Demog.           & w/ Demogr.           & w/o Demog.             & w/ Demogr.            & w/o Demog.           & w/ Demogr.           & w/o Demog.           \\
+Age at Offense            & 0.011                 & --                   & 0.04                 & --                     & 0.042                 & --                   & 0.062                & --                   \\
+Court Type                & 0.03                  & 0.031                & 0.09                 & 0.098                  & 0.054                 & 0.048                & 0.056                & 0.073                \\
+Courtroom Count           & 0.018                 & 0.018                & 0.078                & 0.087                  & 0.032                 & 0.045                & 0.079                & 0.092                \\
+Enhancement PC 12022      & 0.003                 & 0.003                & 0.012                & 0.015                  & 0                     & 0                    & 0.003                & 0                    \\
+Enhancement PC 1368       & 0.001                 & 0                    & 0.004                & 0.004                  & 0.002                 & 0.002                & 0.028                & 0.032                \\
+Gang Enhancement          & 0                     & 0                    & 0.002                & 0.002                  & 0.002                 & 0.002                & 0.002                & 0                    \\
+Gender                    & 0.002                 & --                   & 0.006                & --                     & 0                     & --                   & 0.008                & --                   \\
+In custody                & 0.013                 & 0.013                & 0.036                & 0.039                  & 0.018                 & 0.021                & 0.045                & 0.052                \\
+Initial Plea              & 0.08                  & 0.08                 & 0.222                & 0.236                  & 0.059                 & 0.057                & 0.054                & 0.055                \\
+Main Charge               & 0.013                 & 0.013                & 0.051                & 0.06                   & 0.077                 & 0.072                & 0.151                & 0.191                \\
+No. Charges               & 0.006                 & 0.006                & 0.021                & 0.026                  & 0.024                 & 0.032                & 0.011                & 0.019                \\
+No. Court Dates           & 0.155                 & 0.161                & --                   & --                     & 0.167                 & 0.182                & --                   & --                   \\
+No. Defendants            & 0.003                 & 0.003                & 0.011                & 0.014                  & 0.005                 & 0.006                & 0.005                & 0.006                \\
+No. Enhancements          & 0.007                 & 0.007                & 0.028                & 0.032                  & 0.005                 & 0.016                & 0.012                & 0.021                \\
+No. Failures to Appear    & 0.006                 & 0.006                & 0.036                & 0.04                   & 0.019                 & 0.014                & 0.044                & 0.057                \\
+No. Felony Charges        & 0.014                 & 0.012                & 0.051                & 0.059                  & 0.022                 & 0.021                & 0.079                & 0.087                \\
+No. Health Code Charges   & 0.006                 & 0.006                & 0.017                & 0.022                  & 0.006                 & 0.011                & 0.036                & 0.055                \\
+No. Penal Code Charges    & 0.008                 & 0.008                & 0.029                & 0.034                  & 0.034                 & 0.043                & 0.031                & 0.042                \\
+No. Plea Dates            & 0.1                   & 0.1                  & --                   & --                     & 0.024                 & 0.037                & --                   & --                   \\
+No. Vehicle Code Charges  & 0.001                 & 0.001                & 0.004                & 0.005                  & 0.003                 & 0.005                & 0.011                & 0.021                \\
+Possible Sentence Outcome & 0.029                 & 0.029                & 0.097                & 0.105                  & 0.051                 & 0.065                & 0.081                & 0.087                \\
+Preliminary Hearing       & 0.052                 & 0.053                & --                   & --                     & 0.006                 & 0.011                & --                   & --                   \\
+Public Defender           & 0.002                 & 0.002                & 0.005                & 0.006                  & 0.014                 & 0.013                & 0.006                & 0.011                \\
+Race/Ethnicity            & 0.005                 & --                   & 0.017                & --                     & 0.014                 & --                   & 0.023                & --                   \\
+Time Waived               & 0.006                 & 0.006                & 0.021                & 0.025                  & 0.008                 & 0.01                 & 0.039                & 0.049                \\
+Time to Plea              & 0.396                 & 0.42                 & --                   & --                     & 0.229                 & 0.242                & --                   & --                   \\
+Trial                     & 0.004                 & 0.004                & 0.013                & 0.016                  & 0                     & 0                    & 0.002                & 0.002                \\
+Type of Defense Attorney  & 0.017                 & 0.017                & 0.066                & 0.074                  & 0.043                 & 0.046                & 0.042                & 0.047                \\
+Zip Code                  & 0.013                 & --                   & 0.043                & --                     & 0.038                 & --                   & 0.09                 & --                   \\ \cmidrule(r){2-5} \cmidrule(l){7-10} 
+\end{tabular}
+\caption{Feature importances found for each of the eight runs of models. ``--'' indicates the variable was not used in the model.}
+\label{tab:featimp}
+\end{table*}

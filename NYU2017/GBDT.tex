@@ -1,0 +1,26 @@
+\subsection{Gradient Boosted Decision Trees}
+
+Whereas the RF is an ensemble learning method that operates on many
+decision trees in parallel, the technique known as GBDT is an ensemble
+method that operates on trees in a serial, recursive fashion.
+
+Boosted models are constructed by adding many weak learners into a
+single model, $$f_{M}(x) = \sum_{i=1}^{M}{T(x;\Theta_{i})}$$ where $M$
+is the number of learners.  Generally, $T$ could be any type of
+learner, but in a GBDT $T(x;\Theta_{i})$ is the $i$-th tree of the
+model defined on the input variables $x$ and whose parameters
+$\Theta_{i}$ define the structure of the tree. The $i+1$-th weak
+learner is generated iteratively by fitting the tree on the residual
+errors from the model of the first $i$ summed trees. In practice, this
+is a difficult problem to solve analytically, so numerical methods are
+substituted to estimate the next optimal tree. In the GBDT technique,
+gradient descent is used to find the local minimum of the loss
+function with respect to the current model. As with other
+gradient-descent learning models, the rate of descent is an additional
+hyperparameter to tune. The number of trees $M$ may be chosen
+\textit{a priori} or be allowed to increase until the desired
+performance is achieved.
+
+Similarly to the RF models, we run the models four times using the
+same variable sets as identified above, using the same grid-search
+algorithm to optimize the hyperparameters of the model.

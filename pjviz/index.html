@@ -1,0 +1,974 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+    <title>Prosecutorial phase durations</title>
+
+    <link rel="stylesheet" href="static/semantic.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type=text/javascript src="static/semantic.js"></script>
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <style>
+#intro  {
+    padding:3em;
+}
+path.line {
+    fill: none;
+    stroke: #666;
+    stroke-width: 1.5px;
+}
+.domain {
+    stroke-width: 1px;
+}
+circle {
+    cursor: pointer;
+}
+.axis {
+    shape-rendering: crispEdges;
+}
+.axis line, .axis path {
+    stroke-width: 1px;
+    stroke: #000;
+    fill: none;
+}
+.axis text {
+                    font-family: sans-serif;
+                                        font-size: 15px;
+                                                        }
+
+.tooltip {
+    display: none;
+}
+.tooltip.active {
+    display: block;
+    z-index:5000;
+}
+.tooltip rect {
+    fill: #ff0000;
+}
+    </style>
+
+</head>
+<body>
+
+
+    <div id="formcontainer">
+    <form id="myform" class="ui form">
+        <div class="ui top attached menu">
+            <div class="ui dropdown icon item">
+                <span><div class="ui sub header">Group by</div>
+<div class="ui floating dropdown labeled icon button">
+    <input name="compare" type="hidden">
+  <i class="tasks icon"></i>
+  <span class="text">Group by</span>
+  <div class="menu">
+    <div class="ui icon search input">
+      <i class="search icon"></i>
+      <input type="text" placeholder="Search fields...">
+    </div>
+    <div class="scrolling menu">
+        <div id="compareitems">
+        </div>
+    </div>
+  </div>
+</div>
+</span>
+            </div>
+            <div class="ui dropdown icon item">
+                <span><div class="ui sub header">Sort by</div>
+<div class="ui floating dropdown labeled icon button">
+    <input name="sort" type="hidden">
+  <i class="sort icon"></i>
+  <span class="text">Sort by</span>
+  <div class="menu">
+    <div class="ui icon search input">
+      <i class="search icon"></i>
+      <input type="text" placeholder="Search fields...">
+    </div>
+    <div class="scrolling menu">
+        <div id="sortitems">
+        </div>
+    </div>
+  </div>
+</div>
+</span>
+            </div>
+            <div class="ui dropdown icon item">
+                <i class="filter icon"></i>
+                Filters
+                <div class="menu">
+                <div class="item">
+                <div class="grouped fields">
+                    <div id="genderradios">
+                    </div>
+                </div>
+                </div>
+                <div class="item">
+                <div class="grouped fields">
+                    <div id="raceradios">
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+            <div class="ui dropdown icon item">
+                <i class="wrench icon"></i>
+                Aggregation Function
+                <div class="menu">
+                <div class="item">
+                <div class="grouped fields">
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="aggfunc" value="mean" checked="checked">
+                            <label>Mean</label>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="ui radio checkbox">
+                            <input type="radio" name="aggfunc" value="median">
+                           <label>Median</label>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                </div>
+            </div>
+            <a class="item">
+                <div class="ui toggle buttons">
+    <input id="abs" name="abs" type="hidden">
+                    <button class="ui toggle button active" type=button value="abs" id="abs">Absolute</button>
+                    <button class="ui toggle button" type=button value="rel" id="rel">Relative</button>
+                </div>
+            </a>
+
+<div class="ui hidden compact floating icon message" id="rel_mean_only">
+        <i class="warning icon"></i>
+        <div class="content">
+    <div class="header">
+        Settings changed
+    </div>
+    <p><b>Relative</b> view is only defined for the mean aggregation function, and it has been selected.</p>
+        </div>
+</div>
+        </div>
+    </div>
+    </form>
+
+    <!-- The container where d3 puts its plot -->
+    <div id="plot">
+    </div>
+
+    <div class="ui popup" id="tooltip">
+    </div>
+
+<div class="ui basic modal">
+  <div class="ui huge header">
+      <i class="massive icons">
+            <i class="university icon"></i>
+            <i class="inverted corner yellow law icon"></i>
+      </i>
+    Prosecution duration visualization
+  </div>
+  <div class="content">
+    <p>NOTICE: This data is provided to authorized users of the Santa Clara County District Attorney's office.</p>
+    <i>This visualization uses synthetic data for public demonstration purposes.</i>
+  </div>
+  <div class="actions">
+    <div class="ui red basic inverted button deny">
+      <i class="remove icon"></i>
+      Leave
+    </div>
+    <div class="ui green basic inverted button approve">
+      <i class="checkmark icon"></i>
+      Continue
+    </div>
+  </div>
+</div>
+
+    <!-- Inline script to handle button events, form setting-getting, and
+    d3 plotting functions -->
+
+    <script>
+/*
+   -----------------------------
+    UI CODE
+   -----------------------------
+*/
+
+	var phasenames = ["Case start to Arraignment", "Arraignment to Plea", "Plea to Decision", "Decision to End"];
+	// oh the indignity...
+    var phasenamesdict = {"Case start to Arraignment": {"field": "time_to_arraignment", "order": 1},
+                          "Arraignment to Plea":   {"field": "time_to_plea", "order": 2},
+                          "Plea to Decision":      {"field": "time_to_decision", "order": 3},
+                          "Decision to End":       {"field": "time_to_last", "order": 4},
+                          "t4":                    {"field": "t4", "order": 0},
+                          "idx":                   {"field": "", "order": 0}
+    };
+        // form items (would like this to be generated on-the-fly from data)
+        var genders = {'all': 'All', 'male': 'Male', 'female': 'Female'};
+        var races      = {'all': 'All', 'white': 'White', 'nonwhite': 'Non-white'};
+	var sortfields = {};
+	sortfields[phasenames[0]] = 'Duration phase 1'; 
+        sortfields[phasenames[1]] = 'Duration phase 2';
+        sortfields[phasenames[2]] = 'Duration phase 3';
+        sortfields[phasenames[3]] = 'Duration phase 4'; 
+        sortfields['t4'] = 'Total duration';
+        sortfields['idx'] = 'ID';
+        var comparefields = {'DEFENDANT_ID': "Individuals (don't summarize)",
+                         "agebin": "Age",
+                         "GENDER": "Gender",
+                         "RACE": "Race",
+                         "multiple_charges": "Single/multiple charges",
+                         "multiple_defendants": "Single/multiple defendants",
+                         "prior": "Priors",
+                         "MainCourtRoomName": "Court room",
+                         "INITIAL_CUSTODY_STATUS": "Initial Custody Status",
+                         "all": "Everyone (summarize entire population)"};
+
+      // Needed to use buttons as exclusive choices:
+        semantic = {};
+
+        // ready event
+        semantic.ready = function() {
+
+        // Create items appended to the correct divs
+        var genderdiv = document.getElementById("genderradios");
+        for (var key in genders) {
+            var d = document.createElement("div");
+            d.className = "field";
+            var d2 = document.createElement("div");
+            d2.className = "ui radio checkbox";
+            var i = document.createElement("input");
+            i.setAttribute("type", "radio");
+            i.setAttribute("name", "gender");
+            i.setAttribute("value", key);
+            if (key == 'all') { i.checked = 'checked'; }
+            var l = document.createElement("label");
+            l.innerHTML = genders[key];
+            d2.appendChild(i);
+            d2.appendChild(l);
+            d.appendChild(d2);
+            genderdiv.appendChild(d);
+        }
+        var racediv = document.getElementById("raceradios");
+        for (var key in races) {
+            var d = document.createElement("div");
+            d.className = "field";
+            var d2 = document.createElement("div");
+            d2.className = "ui radio checkbox";
+            var i = document.createElement("input");
+            i.setAttribute("type", "radio");
+            i.setAttribute("name", "race");
+            i.setAttribute("value", key);
+            if (key == 'all') { i.setAttribute("checked", 'checked'); }
+            var l = document.createElement("label");
+            l.innerHTML = races[key];
+            d2.appendChild(i);
+            d2.appendChild(l);
+            d.appendChild(d2);
+            racediv.appendChild(d);
+        }
+        var sortdiv = document.getElementById("sortitems");
+        for (var key in sortfields) {
+            var d = document.createElement("div");
+            d.className="item";
+            d.setAttribute('data-value', key);
+            d.innerHTML = sortfields[key];
+            sortdiv.appendChild(d);
+        }
+        var comparediv = document.getElementById("compareitems");
+        for (var key in comparefields) {
+            var d = document.createElement("div");
+            d.className="item";
+            d.setAttribute('data-value', key);
+            d.innerHTML = comparefields[key];
+            comparediv.appendChild(d);
+        }
+
+        // selector cache
+        var
+          $buttons = $('.ui.buttons .button'),
+          $toggle  = $('.main .ui.toggle.button'),
+          $button  = $('.ui.button').not($buttons).not($toggle),
+          // alias
+          handler = {
+  
+            activate: function() {
+              $(this)
+                .addClass('active')
+                .siblings()
+                .removeClass('active')
+              ;
+              //Set the hidden value so it can be returned with other form vals
+              $("#abs")
+                  .val($(".ui.toggle.button.active").val())
+                  .trigger('change')
+            }
+  
+          }
+
+        ;
+
+        // Attach callbacks to change event
+        $('input[name=gender]').change(loader);
+        $('input[name=aggfunc]').change(loader);
+        $('input[name=race]').change(loader);
+        $('input[name=abs]').change(loader);
+        $('input[name=sort]').change(loader);
+        $('input[name=compare]').change(loader);
+        // Initialize the dropdowns
+        $('.ui.dropdown').dropdown();
+
+
+          $buttons
+            .on('click', handler.activate)
+          ;
+
+          $toggle
+            .state({
+              text: {
+                inactive : 'Vote',
+                active   : 'Voted'
+              }
+            })
+          ;
+
+          $('.ui.modal').modal();
+          $('.ui.button#abs').click();
+    };
+
+    init_popups = function(){
+        $('.bars').popup({
+            popup : $('.ui.popup'),
+            movePopup: false,
+            hoverable : true
+        });
+     
+    };
+
+// attach ready event
+$(document)
+  .ready(semantic.ready)
+;
+
+/*
+   -----------------------------
+    D3 CODE
+   -----------------------------
+*/
+
+$('.ui.modal')
+  .modal({
+      onDeny: function($element){window.location="https://google.com";},
+      onApprove: function($element){window.alert("Welcome!");}
+  })
+  .modal('show')
+  ;
+
+        // Set up the plot window.
+        var topmargin = 50,
+            bottommargin = 50,
+            leftmargin=150,
+            rightmargin=50;
+        var w = 1500 - (leftmargin+rightmargin), h = 700 - (topmargin+bottommargin);
+        var svg = d3.select("#plot").append("svg")
+                        .attr("width", 1500)
+                        .attr("height", 700);
+   //     var g = svg.append("svg:g")
+     //                   .attr("transform", "translate(" + margin + ", " + margin + ")");
+
+        var heightfrac = 0.8;
+        var thekeys=phasenames; //['x1','x2','x3','x4'];
+        var agebins = [21,28];
+
+        var dstacks = svg.append("g")
+                         .attr("transform", "translate(" + leftmargin + ", " + topmargin + ")")
+                         .attr("class", "dstacks");
+
+      
+        var initialview = {
+            relative: false,
+            aggfunc: "mean",
+            gender: "all",
+            race: "all",
+            sort: "t4",
+            compare: "all"};
+
+        // Axes scaling functions.
+        svg.append("svg:g").attr("class", "x axis")
+                           .attr("transform", "translate(" + leftmargin + ", " + (h + topmargin) + ")");
+        svg.append("svg:g").attr("class", "y axis")
+                           .attr("transform", "translate(" + leftmargin + ", " + topmargin + ")");
+        // Format the numbers 
+        var numFormat = d3.format(".2f")
+        
+        // Show the information about a particular point.
+        var show_info = function (d) {
+            d3.select("#point-info").text("This is point " + d._id + ". "
+                + "It has the coordinates (" + numFormat(d.x) + ", " + numFormat(d.y) + ").");
+        };
+
+        var formselections = function(){return $("#myform").form('get values');}
+
+        var bins = {'agebin': [21,30,40], 'gender': [1], 'RACE': [1]}
+
+        function update(data){
+
+            var fs = formselections();
+            var binneddata = [];
+
+            var histidx = function(binval){
+                if (fs.compare !== "agebin") return binval;
+                binlistLength = bins[fs.compare].length;
+                for (i=0; i<binlistLength; i++){
+                    if (bins[fs.compare][i]==binval)
+                        if (i < binlistLength - 1)
+                            return bins[fs.compare][i] + "-" + bins[fs.compare][i+1];
+                        else
+                            return ">" + bins[fs.compare][i];
+                    }
+                return "<" + bins[fs.compare][0];
+            }
+
+            var binByAge = d3.histogram()
+                .value(function (d) {return d.AGE_AT_OFFENSE})
+                .thresholds(bins.agebin)
+                (update.data)
+                .forEach(function (d) { d
+                    .forEach(function (e){ 
+                        e.agebin = histidx(d.x0);
+                        binneddata.push(e);
+                    })
+                });
+
+            var aggdata = d3.nest()
+                .key(function (d) {
+                    if (fs.compare == "all")
+                        return "All";
+                    else
+                        return d[fs.compare];})  //for no-agg, d.idx
+                .rollup(function(vals) {
+                    signs = [ ];
+                    thekeys.forEach(function (k) { signs.push((phasenamesdict[fs.sort]["order"] > phasenamesdict[k]["order"]) ? -1 : +1); });
+        		 	var thereturn = {};
+                        thereturn[phasenames[0]] = d3[fs.aggfunc](vals, function (d) {
+                            if (d.time_to_arraignment)
+                                return signs[0] * d.time_to_arraignment;
+                            else
+                                return 0;})
+                        thereturn[phasenames[1]] = d3[fs.aggfunc](vals, function (d) {
+                            if (d.time_to_plea)
+                                return signs[1] * (d.time_to_plea-d.time_to_arraignment);
+                            else
+                                return 0;})
+                                //return thereturn[phasenames[0]];})
+                        thereturn[phasenames[2]] = d3[fs.aggfunc](vals, function (d) {
+                            if (d.time_to_decision)
+                                return signs[2] * (d.time_to_decision-d.time_to_plea);
+                            else
+                                return 0;})
+                        thereturn[phasenames[3]] = d3[fs.aggfunc](vals, function (d) {
+                            if (d.time_to_last)
+                                return signs[3] * (d.time_to_last-d.time_to_decision);
+                            else
+                                return 0;})
+                        thereturn["t4"] = d3[fs.aggfunc](vals, function (d) {return +d.time_to_arraignment+d.time_to_plea+d.time_to_decition+d.time_to_last});
+		        	return thereturn;
+                })
+                .entries(update.data.filter(function (d){
+                    var retval = true;
+                    //if (fs.gender !== "all"){
+                    //    retval = retval && (d.gender == 1*(fs.gender == "male"))}
+                    //if (fs.race !== "all"){
+                    //    retval = retval && (d.race == 1*(fs.race == "white"))}
+                    return retval;}))
+                .sort(function (a,b) {
+                    if (fs.sort == "idx"){
+                        var a1 = a.key.substring(0,1);
+                        var b1 = b.key.substring(0,1);
+                        var a_ = a.key.indexOf('-');
+                        var b_ = b.key.indexOf('-');
+                        return d3.ascending((a1=='<') ? -99999999 :
+                                            (a1=='>') ? 99999999 :
+                                            (a_) ? +(a.key.substring(0,a_)) : 
+                                            +a.key,
+                                            (b1=='>') ? 99999999 :
+                                            (b1=='<') ? -99999999 :
+                                            (b_) ? +(b.key.substring(0,b_)) : 
+                                            +b.key)}
+                    else {return  d3.ascending( +a.value[fs.sort], +b.value[fs.sort]);}
+                });
+
+            update.aggdata = aggdata;
+
+            // Insert the data points.
+            var stack=d3.stack()
+                .keys(thekeys)
+                .value(function (d, key) { return d.value[key]; })
+                .offset(d3.stackOffsetDiverging);
+            
+            function stackMin(serie) {
+                  return d3.min(serie, function(d) { return d[0]; });
+            }
+
+            function stackMax(serie) {
+                  return d3.max(serie, function(d) { return d[1]; });
+            }
+
+            // Rescale the axes.
+        var y = d3.scaleBand()
+                    .domain(aggdata.map(function(d) { 
+                        if (fs.compare == "all")
+                            return "All";
+                        else
+                            return d.key;}))
+                    .rangeRound([0, h])
+                    //.paddingInner(0.05)
+                    //.align(0.1)
+                    ;
+
+        var x = d3.scaleLinear()
+                    //.domain([0, d3.max(data, function(d) { return d.t4; })]).nice()
+                    .domain([d3.min(stack(aggdata), stackMin), d3.max(stack(aggdata), stackMax)]).nice()
+                    .rangeRound([0,w]); //[margin, w+margin]);
+
+        var xnorm = {};
+        aggdata.forEach(function (d){
+                    xnorm[d.key] = d3.scaleLinear()
+                        .domain([0, d.value.t4 ])
+                        .range([0,w]);
+                });
+
+        var colors = [ ];
+        for (i=0; i<4; i++){colors.push(d3.interpolateViridis(i/3.));};
+
+        var z = d3.scaleOrdinal()
+                    .range(colors); //["#98abc5", "#8a89a6", "#7b6888", "#6b486b"]);
+
+        // The axes objects themselves.
+        if (fs.abs == "abs"){
+            var xaxis = d3.axisBottom(x).ticks(8);
+        }
+        else {
+            var xaxis = d3.axisBottom(d3.scaleLinear().domain([0,1]).range([0,w])).ticks(8, "%");
+        }
+        var yaxis = d3.axisLeft(y).ticks(8);
+
+            z.domain(thekeys);
+            // Display the axes.
+            svg.select(".x.axis").call(xaxis);
+            svg.select(".y.axis").call(yaxis);
+
+		//Legend code adapted from http://jsbin.com/ubafur/3/edit?html,js,output
+	   var legend = svg.append("svg:g")
+		   .attr("class", "legend")
+			//.attr("x", w - 65)
+			//.attr("y", 50)
+		   .attr("height", 100)
+		   .attr("width", 100)
+		   .attr('transform', 'translate(250,25)'); 
+    
+		legend.selectAll('.g')
+			.data(thekeys)
+			.enter()
+			.append("g")
+			.each(function(d,i){
+				var g=d3.select(this);
+				g.append("rect")
+				.attr("x", i * 200)
+				.attr("y", 0)
+				.attr("width", 20)
+				.attr("height", 20)
+				.attr("fill", z(d));
+				g.append("text")
+				.attr("x",  i * 200 + 30)
+				.attr("y", 20)
+				.text(d);
+			})
+            .append("text")
+            .attr("x", 550)
+            .attr("y", 670)
+            .text("days");
+
+            dstack = dstacks.selectAll(".dstack")
+                .data(aggdata);
+
+            dstack.enter()
+                .append("svg:g")
+                .attr("class", "dstack")
+                ;
+            
+            dstack.exit()
+                .transition()
+                .duration(500)
+                .style("opacity", 0)
+                .remove();
+
+            dstack = dstacks.selectAll(".dstack");
+
+            bars = dstack.selectAll(".bars")
+                .data(function (d){return stack([d]);})
+                ;
+			bars.exit()
+				.remove();
+
+            bars.enter()
+                .append("rect")
+				.attr("class", "bars")
+                .attr("x", function(d){
+					return (fs.abs == "abs")? x(0) : xnorm[d[0].data.key](0);})
+				.attr("y", function(d){ return y(d[0].data.key) + (1-heightfrac)/2*y.bandwidth();})
+				.attr("width", 0)
+				.attr("height", heightfrac*y.bandwidth())
+                .attr("fill", function(d){return z(d.key);})
+                .attr("field", function(d){return d.key;})
+				.merge(bars)
+                .on("mouseover", boxplot)
+                .on("mouseout", clearpopup)
+                .transition()
+                .duration(750)
+		  		.delay(100)
+                .attr("x", function(d){ 
+                    if (fs.abs == "abs"){
+                        return x(d[0][0]);
+                    }
+                    else {
+                        return xnorm[d[0].data.key](d[0][0]);
+                    }
+                    })
+				.attr("y", function(d){ return y(d[0].data.key) + (1-heightfrac)/2*y.bandwidth();})
+				.attr("width", function(d){
+                    if (fs.abs == "abs"){
+                        return x(d[0][1]) -x(d[0][0]);
+                    }
+                    else {
+                        return xnorm[d[0].data.key](d[0][1])  - xnorm[d[0].data.key](d[0][0]);
+                    }
+                    })
+				.attr("height", heightfrac*y.bandwidth());
+
+	    init_popups();    
+
+        };
+        
+// Boxplot code modified from: http://bl.ocks.org/mattbrehmer/12ea86353bc807df2187
+function boxplot(bar){
+
+    var fs = formselections();
+
+    if (fs.compare == "idx") {
+      var popup = document.getElementById("tooltip");
+      var header = document.createElement("div");
+      var cl = document.createElement("div");
+      cl.className = "ui sub header"
+          cl.innerHTML =  "Case number " + bar[0].data.key + "<br>field " + bar.key + " = " + bar[0].data.value[bar.key].toFixed(1);
+      header.appendChild(cl);
+      popup.appendChild(header);
+    
+      return 0;
+    };
+
+    var data = (fs.compare=="all")
+        ? update.data
+        : update.data.filter(function(d){
+            var retval = true;
+            return (bar[0].data.key == d[fs.compare]);
+        });
+         //   : d3.histogram()
+        //  .value(function (d) {return d[(fs.compare=="agebin")?"age":fs.compare]})
+        //  .thresholds(bins[fs.compare])
+        //  (update.data);
+
+    //initialize the dimensions
+    var margin = {top: 10, right: 10, bottom: 10, left: 10},
+        width = 400 - margin.left - margin.right,
+        height = 80 - margin.top - margin.bottom,
+        padding = 20
+        midline = (height - padding) / 2;
+
+    //initialize the x scale
+    var xScale = d3.scaleLinear()
+                   .range([padding, width - padding]);  
+
+    //initialize the x axis
+    var xAxis = d3.axisBottom(xScale).ticks(6);
+
+    //initialize boxplot statistics
+    var outliers = [],
+        minVal = Infinity,
+        lowerWhisker = Infinity,
+        q1Val = Infinity,
+        medianVal = 0,
+        q3Val = -Infinity,
+        iqr = 0,
+        upperWhisker = -Infinity,
+        maxVal = -Infinity;
+            
+    var inv_histidx = function(){
+        var testval = "";
+        var binlistLength = bins[fs.compare].length;
+        for (i=0; i<binlistLength + 1; i++){
+            if (i==0)
+                testval = "<" + bins[fs.compare][0];
+            else if (i < binlistLength)
+                testval = bins[fs.compare][i-1] + "-" + bins[fs.compare][i];
+            else
+                testval = ">" + bins[fs.compare][binlistLength - 1];
+            
+            if (testval == bar[0].data.key)
+                return i;
+        }
+    }
+
+      //if (fs.compare !== "all") {data = data[fs.compare=="agebin"
+      //                                  ? inv_histidx()
+      //                                  : bar[0].data.key]};
+
+      data = data.map(function(d) {
+          // treat null as 0
+          var myval = d[phasenamesdict[bar.key]["field"]];
+          if (myval)  
+            return d[phasenamesdict[bar.key]["field"]];
+          else
+            return 0;
+      });
+
+      data = data.sort(d3.ascending);
+
+      //calculate the boxplot statistics
+      minVal = data[0],
+      q1Val = d3.quantile(data, .25),
+      medianVal = d3.quantile(data, .5),
+      q3Val = d3.quantile(data, .75),
+      iqr = q3Val - q1Val,
+      maxVal = data[data.length - 1];
+      // lowerWhisker = d3.max([minVal, q1Val - iqr])
+      // upperWhisker = d3.min([maxVal, q3Val + iqr]);
+
+      var index = 0;
+
+      //search for the lower whisker, the mininmum value within q1Val - 1.5*iqr
+      while (index < data.length && lowerWhisker == Infinity) {
+
+        if (data[index] >= (q1Val - 1.5*iqr))
+          lowerWhisker = data[index];
+        else
+          outliers.push(data[index]);
+        index++;
+      }
+
+      index = data.length-1; // reset index to end of array
+
+      //search for the upper whisker, the maximum value within q1Val + 1.5*iqr
+      while (index >= 0 && upperWhisker == -Infinity) {
+
+        if (data[index] <= (q3Val + 1.5*iqr))
+          upperWhisker = data[index];
+        else
+          outliers.push(data[index]);
+        index--;
+      }
+     
+      //map the domain to the x scale +10%
+      xScale.domain([0,maxVal*1.10]);
+
+      var popup = document.getElementById("tooltip");
+      var header = document.createElement("div");
+      var cl = document.createElement("div");
+      cl.className = "ui sub header"
+      cl.innerHTML = fs.compare + " " + bar[0].data.key + "; field " + bar.key;
+      header.appendChild(cl);
+      popup.appendChild(header);
+
+      var svg = d3.select(".ui.popup")
+          .append("svg")
+          .attr("width", width)
+          .attr("height", height);
+
+      //append the axis
+      svg.append("g")
+         .attr("class", "axis")
+         .attr("transform", "translate(0, " + (height - padding) + ")")
+         .call(xAxis);
+
+      //draw verical line for lowerWhisker
+      svg.append("line")
+         .attr("class", "whisker")
+         .attr("x1", xScale(lowerWhisker))
+         .attr("x2", xScale(lowerWhisker))
+         .attr("stroke", "black")
+         .attr("y1", midline - 10)
+         .attr("y2", midline + 10);
+
+      //draw vertical line for upperWhisker
+      svg.append("line")  
+         .attr("class", "whisker")
+         .attr("x1", xScale(upperWhisker))
+         .attr("x2", xScale(upperWhisker))
+         .attr("stroke", "black")
+         .attr("y1", midline - 10)
+         .attr("y2", midline + 10);
+
+      //draw horizontal line from lowerWhisker to upperWhisker
+      svg.append("line")
+         .attr("class", "whisker")
+         .attr("x1",  xScale(lowerWhisker))
+         .attr("x2",  xScale(upperWhisker))
+         .attr("stroke", "black")
+         .attr("y1", midline)
+         .attr("y2", midline);
+
+      //draw rect for iqr
+      svg.append("rect")    
+         .attr("class", "box")
+         .attr("stroke", "black")
+         .attr("fill", "white")
+         .attr("x", xScale(q1Val))
+         .attr("y", padding-margin.top)
+         .attr("width", xScale(iqr) - padding)
+         .attr("height", 20);
+
+      //draw vertical line at median
+      svg.append("line")
+         .attr("class", "median")
+         .attr("stroke", "black")
+         .attr("x1", xScale(medianVal))
+         .attr("x2", xScale(medianVal))
+         .attr("y1", midline - 10)
+         .attr("y2", midline + 10);
+
+      //draw data as points
+      svg.selectAll("circle")
+         .data(data)     
+         .enter()
+         .append("circle")
+         .attr("r", 2.5)
+         .attr("class", function(d) {
+          if (d < lowerWhisker || d > upperWhisker)
+            return "outlier";
+          else 
+            return "point";
+         })     
+         .attr("cy", function(d) {
+          return random_jitter();
+         }) 
+         .attr("cx", function(d) {
+          return xScale(d);   
+         })
+         .append("title");
+
+      var footer = document.createElement("div");
+      //footer.className = "ui statistics";
+      var dl = document.createElement("div");
+      dl.className = "ui four column grid";
+      
+      var statmin = document.createElement("div");
+      statmin.className = "column";
+      var d = document.createElement("div");
+      d.className = "ui tiny statistic";
+      var v = document.createElement("div");
+      v.className = "value";
+      v.innerHTML = minVal.toFixed(1);
+      l = document.createElement("div");
+      l.className = "label";
+      l.innerHTML = "Minimum";
+      d.appendChild(v);
+      d.appendChild(l);
+      statmin.appendChild(d);
+
+      var statmed = document.createElement("div");
+      statmed.className = "column";
+      var d = document.createElement("div");
+      d.className = "ui tiny statistic";
+      var v = document.createElement("div");
+      v.className = "value";
+      v.innerHTML = medianVal.toFixed(1);
+      l = document.createElement("div");
+      l.className = "label";
+      l.innerHTML = "Median";
+      d.appendChild(v);
+      d.appendChild(l);
+      statmed.appendChild(d);
+
+      var statmean = document.createElement("div");
+      statmean.className = "column";
+      var d = document.createElement("div");
+      d.className = "ui tiny statistic";
+      var v = document.createElement("div");
+      v.className = "value";
+      v.innerHTML = d3.mean(data).toFixed(1); //medianVal.toFixed(1);
+      l = document.createElement("div");
+      l.className = "label";
+      l.innerHTML = "Mean";
+      d.appendChild(v);
+      d.appendChild(l);
+      statmean.appendChild(d);
+
+      var statmax = document.createElement("div");
+      statmax.className = "column";
+      var d = document.createElement("div");
+      d.className = "ui tiny statistic";
+      var v = document.createElement("div");
+      v.className = "value";
+      v.innerHTML = maxVal.toFixed(1);
+      l = document.createElement("div");
+      l.className = "label";
+      l.innerHTML = "Maximum";
+      d.appendChild(v);
+      d.appendChild(l);
+      statmax.appendChild(d);
+
+      dl.appendChild(statmin);
+      dl.appendChild(statmed);
+      dl.appendChild(statmean);
+      dl.appendChild(statmax);
+      footer.appendChild(dl);
+      popup.appendChild(footer);
+
+    };
+
+    function random_jitter() {
+      if (Math.round(Math.random() * 1) == 0)
+        var seed = -5;
+      else
+        var seed = 5; 
+      return midline + Math.floor((Math.random() * seed) + 1);
+    };
+
+    function clearpopup() {
+        $('.ui.popup').html("");
+    };
+
+    function showmessage(div_id) {
+        $('#'+div_id)
+            .transition("fade up")
+            .transition({
+                animation:"fade up",
+                interval: 5000});
+    }
+
+        // Load the data.
+        // Note d3.json() passes the second argument as a callback with the data, so this
+        // will send the data to draw.
+	    d3.json("scramble2.json", loader);	
+
+        function loader(data){
+
+            if (data.type){ //this is an event object, not an array
+                update(update.data);
+
+            }
+            else{
+                // Array was passed, store it with the function object for future updates
+                update.data = data;
+                update(update.data);
+            }
+        }
+
+
+    </script>
+
+</body>
+</html>
+

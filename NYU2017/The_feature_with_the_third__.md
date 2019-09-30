@@ -1,0 +1,1 @@
+The feature with the third highest importance is the type of court where case disposition took place. Court types are associated with specific types of criminal cases such as drug or domestic violence crimes, or they are specific to a different geographic area of the county.

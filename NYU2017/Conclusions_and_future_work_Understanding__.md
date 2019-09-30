@@ -1,0 +1,11 @@
+# Conclusions and future work
+
+Understanding why some criminal cases take a long time to resolve is a complex but important task. We attempted to shed light on this issue by creating a dashboard for exploration of case timelines and by modeling to determine important features of long cases. After the task of parsing and preprocessing case events and characteristics was completed, we were able to begin exploration and modeling.
+
+In this paper, we described the design and construction of a case timeline visualization tool. This tool eases exploratory analysis by representing timelines has horizontal bar charts that can be grouped, filtered, and sorted according to a user's choices.
+
+We also constructed Random Forest and Gradient Boosted decision tree models to isolate important features in determining whether a case is resolved within a year or not. We found that the time to the first plea event is one of the most important features in determining case length. We also found that the type of initial plea and the type of court room for disposition were important features. Because the type of initial plea is highly important in determining duration, the SCC DA could investigate their plea bargaining strategies and change initial plea offers to influence overall case durations.
+
+There is much future potential work that could be done with this dataset. Augmenting this data with external datasets such as sentencing outcomes, bail amounts, concurrent individual court room, attorney case loads, and arrest and incarceration rates in SCC may yield more robust models. A comparison with case data from similar jurisdictions in California would also be valuable.
+
+Our project found no evidence to support the statement from the Santa Clara County Civil Grand Jury report that fewer than half of felony cases are resolved within a year. The exact data and process used by the Civil Grand Jury and the California Judicial Council to evaluate case duration is not reproducible, but with our 2014 felony dataset and process we found that approximately 74% of our 2014 felony dataset was resolved within a year. While this is still short of the 88% for the rest of California, the problem of felony case durations may not be as dire as claimed by the Civil Grand Jury.

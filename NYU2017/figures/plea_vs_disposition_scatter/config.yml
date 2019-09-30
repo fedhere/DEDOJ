@@ -1,0 +1,19 @@
+---
+version: 2
+multicolumn: false
+web-width: 500px
+align: center
+float: h!
+grid:
+  rows: 1
+  columns: 1
+  grid_elements:
+  - url: "/users/45/articles/187222/master/file/figures/plea_vs_disposition_scatter/plea_vs_disposition_scatter.png"
+    path: figures/plea_vs_disposition_scatter/plea_vs_disposition_scatter.png
+    type: static
+    from:
+    - 1
+    - 1
+    to:
+    - 1
+    - 1

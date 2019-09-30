@@ -1,0 +1,41 @@
+Abstract_The_District_Attorney_s__.md
+authors not standard1.tex
+LitReview.tex
+Data_Data_sources_The_data__1.md
+engFeatCaption.tex
+section_Exploratory_Data_Analysis_subsection__.tex
+figures/time_to_dispo_histo
+figures/plea_vs_disposition_scatter
+To_examine_what_other_case__.tex
+figures/multiple_violins4
+We_can_extend_this_examination__.tex
+figures/4violins_custody
+In_Figure_ref_fig_ViolinsCompetency__.tex
+figures/4violins_pc1
+Even_though_it_takes_more__.tex
+subsection_Demographics_Having_information_on__.tex
+figures/chargesByRace_demographics1
+figures/age_histo
+figures/gender
+figures/scc_map1
+Using_the_demographics_of_the__.md
+figures/race_boxplot
+In_Figure_ref_fig_DurationsMeth__.md
+figures/race_modalcrime_boxplot
+Lastly_in_Figure_ref_fig__.tex
+figures/boxplot_race_2ndmodalcrime
+Visual_analysis_tools__.md
+Vis_data_explore_1.tex
+figures/sshot_original_original
+Vis_data_explore_2.tex
+section_Modeling_and_Feature_Importance__.tex
+dtree description.tex
+figures/simpleTree
+featureimportance.tex
+o .tex
+RF_desc.tex
+GBDT.tex
+figures/pasted_image_at_2017_07_29_09_16_pm
+figures/roc_curve_rf2
+figures/ROC_without_demographics1
+appendixA.tex

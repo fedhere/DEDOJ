@@ -1,0 +1,27 @@
+\section{Exploratory Data Analysis}
+\subsection{Time Duration of Cases}
+Having extracted the time of arraignment, plea, disposition and the last event of a case, timelines for each case can now be constructed. Statistics of the phases of the prosecutorial process for the 4,431 cases issued in January through June of 2014 can be seen in Table~\ref{tab:timelines}.
+
+\begin{table*}
+\centering
+  \begin{tabular}{r|r|r|r|r|r|r}
+days to	            &min	&25\%   &median		&75\%   &max    &mean\\
+\hline
+Arraignment	        &0	    &1	    &5          &31	    &1093   &30.5\\
+First plea	        &0	    &36	    &90         &180	&1222   &137.4\\
+Disposition	        &0	    &63	    &141.5      &281.8	&1181   &210.8\\
+Last Court Event	&0	    &178    &378	    &684.5	&1232*  &455\\
+\hline
+\end{tabular}
+\caption{Statistics on the duration of the prosecutorial process in four phases from the day the case was issued for the 4,431 cases issued between January and June of 2014 by SCC with {\it complete} information (i.e. missing data were removed by row).
+(*) The last event is the latest event logged, but we have no information to indicate whether future court events are possible or expected.
+}
+\label{tab:timelines}
+\end{table*}
+
+What is immediately interesting from table \ref{tab:timelines} is the median value of days to disposition: 141.5 days. This directly contradicts the findings of the report issued by the SCC Civil Grand Jury which states that only 47\% of cases in SCC are resolved within a year. Furthermore, according to our findings, 81.5\% of cases in SCC were resolved within a year. Figure \ref{fig:daysToDispo} shows us the distribution of case duration and further emphasizes the point that most cases are resolved early in the process. Again, regarding the Civil Grand Jury report, it must be stated that it is not reproducible so direct comparison can not be made. Further discussion on the Civil Grand Jury report can be found in chapter 2. 
+
+Event though the picture we get is not as grim as the one depicted in the Grand Jury report a rate of 81.5\% case closure within a year is still below the state average of 88\% quoted in that report. Furthermore, knowing what drives delays in the prosecutorial process is generally valuable, independent of location and current case closure statistics. 
+
+Time to plea is a factor that will play heavily in case duration due to the fact that plea has to take place before disposition, Figure \ref{fig:PleaVsDisposition}. What this means is that if time to plea is long the same will apply to time to disposition. However the opposite is not necessarily true as can be seen from the plot; when time to disposition is long, time to plea isn't necessarily long as well.
+

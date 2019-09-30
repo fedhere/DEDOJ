@@ -1,0 +1,20 @@
+---
+version: 2
+multicolumn: false
+web-width: 500px
+align: center
+float: h!
+grid:
+  rows: 1
+  columns: 1
+  grid_elements:
+  - url: "/users/45/articles/187222/master/file/figures/pasted_image_at_2017_07_29_09_16_pm/Pasted%20image%20at%202017_07_30%2007_23%20PM.png"
+    path: figures/pasted_image_at_2017_07_29_09_16_pm/Pasted image at 2017_07_30 07_23
+      PM.png
+    type: static
+    from:
+    - 1
+    - 1
+    to:
+    - 1
+    - 1

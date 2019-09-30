@@ -1,0 +1,19 @@
+---
+version: 2
+multicolumn: false
+web-width: 500px
+align: center
+float: h!
+grid:
+  rows: 1
+  columns: 1
+  grid_elements:
+  - url: "/users/45/articles/187222/master/file/figures/boxplot_race_2ndmodalcrime/boxplot_race_2ndmodalcrime.png"
+    path: figures/boxplot_race_2ndmodalcrime/boxplot_race_2ndmodalcrime.png
+    type: static
+    from:
+    - 1
+    - 1
+    to:
+    - 1
+    - 1
